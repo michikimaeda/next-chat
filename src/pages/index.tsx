@@ -24,23 +24,25 @@ const Rooms: React.FC = () => {
     return <p>部屋が存在しません。</p>;
   }
   return (
-    <ul>
-      <li>
-        <button>Room1</button>
-      </li>
-      <li>
-        <button>Room2</button>
-      </li>
-      <li>
-        <button>Room3</button>
-      </li>
-      <li>
-        <button>Room4</button>
-      </li>
-      {rooms.map((room: RoomType) => {
-        <li key={room.id}>{room.name}</li>;
-      })}
-    </ul>
+    <>
+      <ul>
+        <li>
+          <button>Room1</button>
+        </li>
+        <li>
+          <button>Room2</button>
+        </li>
+        <li>
+          <button>Room3</button>
+        </li>
+        <li>
+          <button>Room4</button>
+        </li>
+        {rooms.map((room: RoomType) => (
+          <li key={room.id}>{room.name}</li>
+        ))}
+      </ul>
+    </>
   );
 };
 export default function Home() {
