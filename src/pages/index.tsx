@@ -2,9 +2,47 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from '@next/font/google';
 import styles from '@/styles/Home.module.css';
+import supabase from '@/utils/supabase';
+import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
-
+type RoomType = {
+  id: number;
+  name: string;
+};
+const Rooms: React.FC = () => {
+  const [rooms, setRooms] = useState<RoomType[] | []>([]);
+  const fetchRooms = async () => {
+    const datas: any = await supabase.from('room').select();
+    console.log(datas);
+    setRooms(datas.body);
+  };
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+  if (!rooms) {
+    return <p>部屋が存在しません。</p>;
+  }
+  return (
+    <ul>
+      <li>
+        <button>Room1</button>
+      </li>
+      <li>
+        <button>Room2</button>
+      </li>
+      <li>
+        <button>Room3</button>
+      </li>
+      <li>
+        <button>Room4</button>
+      </li>
+      {rooms.map((room: RoomType) => {
+        <li key={room.id}>{room.name}</li>;
+      })}
+    </ul>
+  );
+};
 export default function Home() {
   return (
     <>
@@ -22,20 +60,7 @@ export default function Home() {
           <div>
             <button>DM</button>
           </div>
-          <ul>
-            <li>
-              <button>Room1</button>
-            </li>
-            <li>
-              <button>Room2</button>
-            </li>
-            <li>
-              <button>Room3</button>
-            </li>
-            <li>
-              <button>Room4</button>
-            </li>
-          </ul>
+          <Rooms />
         </aside>
         <main className={styles.main}>
           <div>
