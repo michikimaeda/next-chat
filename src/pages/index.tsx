@@ -1,43 +1,36 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import { Inter } from '@next/font/google';
 import styles from '@/styles/Home.module.css';
-import supabase from '@/utils/supabase';
+import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-const inter = Inter({ subsets: ['latin'] });
 type RoomType = {
   id: number;
   name: string;
 };
+
 const Rooms: React.FC = () => {
   const [rooms, setRooms] = useState<RoomType[] | []>([]);
   const fetchRooms = async () => {
-    const datas: any = await supabase.from('room').select();
-    console.log(datas);
-    setRooms(datas.body);
+    try {
+      const { data, error } = await supabase.from('rooms').select();
+      if (error) throw error;
+      setRooms(data);
+    } catch (error) {
+      alert(error);
+      setRooms([]);
+    }
   };
   useEffect(() => {
     fetchRooms();
   }, []);
-  if (!rooms) {
+  if (!rooms || rooms.length <= 0) {
     return <p>部屋が存在しません。</p>;
   }
   return (
     <>
       <ul>
-        <li>
-          <button>Room1</button>
-        </li>
-        <li>
-          <button>Room2</button>
-        </li>
-        <li>
-          <button>Room3</button>
-        </li>
-        <li>
-          <button>Room4</button>
-        </li>
         {rooms.map((room: RoomType) => (
           <li key={room.id}>{room.name}</li>
         ))}
@@ -45,6 +38,43 @@ const Rooms: React.FC = () => {
     </>
   );
 };
+
+type MessageType = {
+  id: number;
+  room_id: number;
+  user_id: number;
+  content: string;
+  created_at: any;
+};
+
+const Messages: React.FC = () => {
+  const [messages, setMessages] = useState<MessageType[] | []>([]);
+  const fetchMessages = async () => {
+    try {
+      const { data, error } = await supabase.from('messages').select();
+      if (error) throw error;
+      setMessages(data);
+      console.log(messages);
+    } catch (error) {
+      alert(error);
+      setMessages([]);
+    }
+  };
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+  if (!messages || messages.length <= 0) {
+    return <p>まだメッセージが存在しません。</p>;
+  }
+  return (
+    <div>
+      {messages.map((message: MessageType) => (
+        <p key={message.id}>{message.content}</p>
+      ))}
+    </div>
+  );
+};
+
 export default function Home() {
   return (
     <>
@@ -58,10 +88,13 @@ export default function Home() {
         <h1>Next Chat</h1>
       </header>
       <div className="content">
+        <h2>
+          <span>Rooms</span>
+        </h2>
         <aside>
-          <div>
+          {/* <div>
             <button>DM</button>
-          </div>
+          </div> */}
           <Rooms />
         </aside>
         <main className={styles.main}>
@@ -84,15 +117,10 @@ export default function Home() {
               </li>
             </ul>
           </div>
+
           <div>
             <div>
-              <p>message</p>
-              <p>message</p>
-              <p>message</p>
-              <p>message</p>
-              <p>message</p>
-              <p>message</p>
-              <p>message</p>
+              <Messages />
             </div>
             <div>profile area</div>
           </div>
