@@ -17,6 +17,7 @@ const Rooms: React.FC = () => {
       const { data, error } = await supabase.from('rooms').select();
       if (error) throw error;
       setRooms(data);
+      console.log(data);
     } catch (error) {
       alert(error);
       setRooms([]);
@@ -75,6 +76,39 @@ const Messages: React.FC = () => {
   );
 };
 
+const MessageForm: React.FC = () => {
+  const [message, setMessage] = useState<string>('');
+  const onSubmitMessageForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.from('messages').insert({
+        room_id: 1,
+        user_id: 1,
+        content: message.toString(),
+      });
+      if (error) throw error;
+      setMessage('');
+    } catch (error) {
+      alert(error);
+    }
+  };
+  const onChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setMessage(e.target.value);
+  };
+  return (
+    <form action="post" onSubmit={onSubmitMessageForm}>
+      <input
+        type="text"
+        id="Message"
+        value={message}
+        onChange={onChangeMessage}
+      />
+      <button type="submit">送信</button>
+    </form>
+  );
+};
+
 export default function Home() {
   return (
     <>
@@ -121,6 +155,7 @@ export default function Home() {
           <div>
             <div>
               <Messages />
+              <MessageForm />
             </div>
             <div>profile area</div>
           </div>
